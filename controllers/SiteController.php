@@ -3,7 +3,6 @@
 namespace app\controllers;
 
 use app\models\News;
-use app\models\Role;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
@@ -130,13 +129,27 @@ class SiteController extends Controller
 
     public function actionSay(string $message = 'Привет')
     {
-//        $news = new News();
-//        $news->title = 'Hello';
-//        $news->preview = 'Pre view this haha';
-//        $news->text = 'Text this haha';
-//        $news->image = 'img.jpg';
-//        $news->save();
+
 
         return $this->render('say', ['message' => $message]);
+    }
+
+    public function actionAddNews() {
+        $model = News::find()->where(['id' => 5])->one();
+        if (empty($model)) {
+            $news = new News();
+            $news->title = 'Hello';
+            $news->preview = 'Pre view this haha';
+            $news->text = 'Text this haha';
+            $news->image = 'img.jpg';
+            if ($news->save()) {
+                echo 'good';
+                die();
+            }
+        } else {
+            print_r($model->toArray());
+            die();
+        }
+
     }
 }

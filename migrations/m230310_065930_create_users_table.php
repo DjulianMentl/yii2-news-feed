@@ -10,6 +10,7 @@ class m230310_065930_create_users_table extends Migration
 {
     /**
      * {@inheritdoc}
+     * @throws \yii\base\Exception
      */
     public function safeUp()
     {
@@ -17,15 +18,17 @@ class m230310_065930_create_users_table extends Migration
             'id' => $this->primaryKey(),
             'username' => $this->string(50)->notNull(),
             'email' => $this->string(80)->notNull(),
-            'password' => $this->string(20)->notNull(),
+            'password' => $this->string(80)->notNull(),
+            'authKey' => $this->string(100)->notNull(),
             'created_at' => $this->timestamp()->defaultValue(new Expression('NOW()')),
             'updated_at' => $this->timestamp(),
         ]);
 
         $this->insert('{{%users}}', [
-            'username' => 'Admin',
+            'username' => 'admin',
             'email' => 'admin@gmail.com',
-            'password' => 'qwer1',
+            'password' => Yii::$app->getSecurity()->generatePasswordHash('qwer1'),
+            'authKey' => Yii::$app->security->generateRandomString(),
         ]);
     }
 

@@ -4,11 +4,15 @@ namespace app\models;
 
 use yii\db\ActiveRecord;
 
+/**
+ * Role model
+ *
+ * @property integer $id
+ * @property string $name
+ * @property string $code
+ */
 class Role extends ActiveRecord
 {
-    public int $id;
-    public string $name;
-    public string $code;
 
     public static function tableName(): string
     {
