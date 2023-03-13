@@ -2,6 +2,7 @@
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
+$routes = require __DIR__ . '/routes.php';
 
 $config = [
     'id' => 'basic',
@@ -42,15 +43,20 @@ $config = [
             ],
         ],
         'db' => $db,
-        /*
         'urlManager' => [
+            'class' => 'yii\web\UrlManager',
             'enablePrettyUrl' => true,
             'showScriptName' => false,
-            'rules' => [
-            ],
+            'enableStrictParsing' => true,
+            'rules' => $routes,
         ],
-        */
     ],
+    'container' => [
+        'definitions' => [
+            \app\services\NewsServiceInterface::class => \app\services\NewsService::class,
+        ],
+    ],
+    'timeZone' => 'Europe/Moscow',
     'params' => $params,
 ];
 

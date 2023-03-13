@@ -21,7 +21,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'admin/news'],
                 'rules' => [
                     [
                         'actions' => ['logout'],
@@ -127,12 +127,12 @@ class SiteController extends Controller
         return $this->render('about');
     }
 
+
     public function actionSay(string $message = 'Привет')
     {
-
-
         return $this->render('say', ['message' => $message]);
     }
+
 
     public function actionAddNews() {
         $model = News::find()->where(['id' => 5])->one();

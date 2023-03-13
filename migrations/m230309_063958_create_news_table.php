@@ -17,11 +17,11 @@ class m230309_063958_create_news_table extends Migration
         $this->createTable('{{%news}}', [
             'id' => $this->primaryKey(),
             'title' => $this->string(200)->notNull(),
-            'preview' => $this->text()->notNull(),
-            'text' => $this->text()->notNull(),
+            'preview' => $this->string(1000)->notNull(),
+            'text' => $this->string(2000)->notNull(),
             'date' => $this->timestamp()->defaultValue(new Expression('NOW()')),
             'counter' => $this->integer()->defaultValue(0),
-            'image' => $this->string(64),
+            'image' => $this->string(200),
             'created_at' => $this->timestamp()->defaultValue(new Expression('NOW()')),
             'updated_at' => $this->timestamp(),
         ]);
@@ -46,7 +46,7 @@ class m230309_063958_create_news_table extends Migration
 
         for ($i = 1; $i <= 20; $i++) {
 
-            $img = '/images/img_' . $i . '.png';
+            $img = 'img' . '.gif';
 
             $news[] = [
                 $faker->realText(40),
