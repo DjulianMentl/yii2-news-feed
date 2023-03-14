@@ -1,5 +1,13 @@
 <?php
 
+use app\components\listeners\EmailNotificationShowNewsListener;
+use app\services\NewsService;
+use app\services\NewsServiceInterface;
+use app\services\SendEmails;
+use app\services\SendEmailsInterface;
+use yii\mutex\PgsqlMutex;
+use yii\symfonymailer\Mailer;
+
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $routes = require __DIR__ . '/routes.php';
@@ -7,7 +15,7 @@ $routes = require __DIR__ . '/routes.php';
 $config = [
     'id' => 'basic',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => ['log', 'queue',],
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
         '@npm'   => '@vendor/npm-asset',
@@ -28,10 +36,12 @@ $config = [
             'errorAction' => 'site/error',
         ],
         'mailer' => [
-            'class' => \yii\symfonymailer\Mailer::class,
+            'class' => Mailer::class,
             'viewPath' => '@app/mail',
-            // send all mails to a file by default.
-            'useFileTransport' => true,
+            'useFileTransport' => false,
+            'transport' => [
+                'dsn' => 'smtp://e.ryndya@worksolutions.ru:82bP38qt@smtp.yandex.ru:465',
+            ],
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
@@ -42,6 +52,17 @@ $config = [
                 ],
             ],
         ],
+        'queue' => [
+            'class' => 'yii\queue\db\Queue',
+            'db' => 'db',
+            'tableName' => '{{%queue}}',
+            'channel' => 'default',
+            'mutex' => [
+                'class' => PgsqlMutex::class,
+                'db' => 'db',
+            ],
+            'mutexTimeout' => 0,
+        ],
         'db' => $db,
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
@@ -51,9 +72,16 @@ $config = [
             'rules' => $routes,
         ],
     ],
+    'controllerMap' => [
+        'news' => [
+            'class' => 'app\controllers\NewsController',
+            'on showNews' => [EmailNotificationShowNewsListener::class, 'handle']
+        ],
+    ],
     'container' => [
         'definitions' => [
-            \app\services\NewsServiceInterface::class => \app\services\NewsService::class,
+            NewsServiceInterface::class => NewsService::class,
+            SendEmailsInterface::class => SendEmails::class,
         ],
     ],
     'timeZone' => 'Europe/Moscow',

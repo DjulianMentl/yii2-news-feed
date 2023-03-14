@@ -23,7 +23,7 @@ class NewsService implements NewsServiceInterface
         $query = News::find();
 
         if ($query === null) {
-            throw new NotFoundHttpException;
+            throw new NotFoundHttpException('Неудалось вывести список новостей');
         }
 
         $pagination = new Pagination([
@@ -35,6 +35,7 @@ class NewsService implements NewsServiceInterface
             ->offset($pagination->offset)
             ->limit($pagination->limit)
             ->all();
+
         return [
             'title' => 'Список новостей',
             'model' => $news,
@@ -49,13 +50,7 @@ class NewsService implements NewsServiceInterface
      */
     public function show(int $id): News
     {
-        $news = News::findOne($id);
-
-        if ($news === null) {
-            throw new NotFoundHttpException;
-        }
-
-        return $news;
+        return $this->findModel($id);
     }
 
 
@@ -86,18 +81,13 @@ class NewsService implements NewsServiceInterface
 
 
     /**
-     * @throws StaleObjectException
      * @throws Throwable
+     * @throws StaleObjectException
+     * @throws NotFoundHttpException
      */
     public function delete(int $id): void
     {
-        $news = News::findOne($id);
-
-        if(!$news) {
-            throw new NotFoundHttpException('Новость не найдена');
-        }
-
-        $news->delete();
+        $this->findModel($id)->delete();
     }
 
     /**
@@ -121,4 +111,17 @@ class NewsService implements NewsServiceInterface
         throw new NotFoundHttpException('Не удалось сохранить новость');
     }
 
+    /**
+     * @throws NotFoundHttpException
+     */
+    private function findModel(int $id): News
+    {
+        $news = News::findOne($id);
+
+        if ($news === null) {
+            throw new NotFoundHttpException('Новость не найдена');
+        }
+
+        return $news;
+    }
 }

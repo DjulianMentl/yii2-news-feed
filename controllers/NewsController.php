@@ -2,12 +2,17 @@
 
 namespace app\controllers;
 
+use app\components\events\ShowNewsEvent;
 use app\services\NewsServiceInterface;
+use app\services\SendEmails;
+use app\services\SendEmailsInterface;
 use yii\web\Controller;
 use yii\web\Request;
 
 class NewsController extends Controller
 {
+    public const EVENT_SHOW_NEWS = 'showNews';
+
     private NewsServiceInterface $news;
 
     public function __construct($id, $module, NewsServiceInterface $news, $config = [])
@@ -27,14 +32,8 @@ class NewsController extends Controller
     {
         $news = $this->news->show($id);
 
-
-        if ($request->getCookies()->has('counter_' . $id)) {
-
-        }
-
-        $cookies = $request->cookies;
-        if ($cookies->get('counter_' . $id) === null) {
-
+        if (!$request->getCookies()->has('counter_' . $id)) {
+            $this->trigger(self::EVENT_SHOW_NEWS, new ShowNewsEvent($news));
         }
 
         return $this->render('details', ['model' => $news,]);

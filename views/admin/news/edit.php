@@ -19,6 +19,7 @@ use yii\widgets\ActiveForm;
 <?= $form->field($model, 'preview')->textarea(['rows' => 3])->label('Анонс')->hint("<?= $model->preview ?? '' ?>") ?>
 <?= $form->field($model, 'text')->textarea(['rows' => 6])->label('Текст новости')->hint("<?= $model->text ?? '' ?>") ?>
 
+
 <?= $form->field($model, 'image')->fileInput() ?>
 
 <?= Html::hiddenInput('_method', 'patch') ?>

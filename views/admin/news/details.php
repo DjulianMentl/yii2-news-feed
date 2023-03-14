@@ -26,6 +26,7 @@ $this->params['breadcrumbs'][] = $this->title;
             <?= Html::a("Редактировать", Url::to(['admin/news/edit', 'id' => $model->id]), ['class' => 'btn']) ?>
         </div>
         <div>
+<!--            --><?php //= Html::a('Удалить', Url::to(['admin/news/destroy', 'id' => $model->id]), ['class'=>'btn btn-warning', 'method' => 'delete']) ?>
             <?php $form = ActiveForm::begin([
                 'id' => 'news-delete-form',
                 'action' => Url::to(['admin/news/destroy', 'id' => $model->id]),
