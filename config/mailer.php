@@ -7,6 +7,6 @@ return [
     'viewPath' => '@app/mail',
     'useFileTransport' => false,
     'transport' => [
-        'dsn' => 'smtp://e.ryndya@worksolutions.ru:82bP38qt@smtp.yandex.ru:465',
+        'dsn' => 'smtp://e.ryndya@worksolutions.ru:password@smtp.yandex.ru:465',
     ],
 ];
