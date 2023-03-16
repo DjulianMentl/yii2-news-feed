@@ -4,7 +4,7 @@ namespace app\controllers\admin;
 
 use app\models\News;
 use app\services\NewsServiceInterface;
-use ExceptionMessages;
+use app\config\ExceptionMessages;
 use Yii;
 use yii\base\Exception;
 use yii\base\InvalidConfigException;

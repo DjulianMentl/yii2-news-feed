@@ -4,7 +4,7 @@ namespace app\services;
 
 use app\models\News;
 
-use ExceptionMessages;
+use app\config\ExceptionMessages;
 use Throwable;
 use Yii;
 use yii\base\Exception;
