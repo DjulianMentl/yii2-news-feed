@@ -14,19 +14,17 @@ $this->params['breadcrumbs'][] = $this->title;
 <h1><?= Html::encode($model->date) ?> — <?= Html::encode($model->title) ?></h1>
     <?php if ($model->image !== null) {?>
         <div>
-            <?= Html::img(Url::to('images/' . Html::encode($model->image), true), ['alt' => "Картинка новости",]) ?>
+            <?= Html::img(Url::to('images/' . Html::encode($model->image), true), ['alt' => "Картинка новости", 'class' => "my-2"]) ?>
         </div>
     <?php } ?>
 
-    <div class="news-text"><?= Html::encode($model->text) ?></div>
+    <div class="my-2"><?= Html::encode($model->text) ?></div>
 
-
-    <div class="button-news-details">
-        <div>
-            <?= Html::a("Редактировать", Url::to(['admin/news/edit', 'id' => $model->id]), ['class' => 'btn']) ?>
+    <div class="d-flex">
+        <div class="align-self-center m-2">
+            <?= Html::a("Редактировать", Url::to(['admin/news/edit', 'id' => $model->id]), ['class' => 'btn btn-primary btn-sm']) ?>
         </div>
-        <div>
-<!--            --><?php //= Html::a('Удалить', Url::to(['admin/news/destroy', 'id' => $model->id]), ['class'=>'btn btn-warning', 'method' => 'delete']) ?>
+        <div class="align-self-center m-2">
             <?php $form = ActiveForm::begin([
                 'id' => 'news-delete-form',
                 'action' => Url::to(['admin/news/destroy', 'id' => $model->id]),
@@ -34,7 +32,7 @@ $this->params['breadcrumbs'][] = $this->title;
             ]) ?>
 
             <?= Html::hiddenInput('_method', 'delete') ?>
-            <?= Html::submitButton('Удалить', ['class' => 'btn']) ?>
+            <?= Html::submitButton('Удалить', ['class' => 'btn btn-danger btn-sm']) ?>
             <?php ActiveForm::end() ?>
         </div>
     </div>

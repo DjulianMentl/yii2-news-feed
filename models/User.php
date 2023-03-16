@@ -18,7 +18,6 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-
     public static function tableName(): string
     {
         return '{{%users}}';
@@ -29,7 +28,7 @@ class User extends ActiveRecord implements IdentityInterface
         return static::findOne($id);
     }
 
-    public static function findByUsername($username): array|ActiveRecord
+    public static function findByUsername($username): null|array|ActiveRecord
     {
         return static::find()
             ->where(['username' => $username])

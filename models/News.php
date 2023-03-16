@@ -6,7 +6,6 @@ use DateTime;
 use Yii;
 use yii\base\Exception;
 use yii\db\ActiveRecord;
-use yii\web\Request;
 
 /**
  * News model
@@ -21,7 +20,6 @@ use yii\web\Request;
  */
 class News extends ActiveRecord
 {
-
     public function rules(): array
     {
         return [
@@ -29,20 +27,15 @@ class News extends ActiveRecord
             [['title'], 'string', 'max' => 200,],
             [['preview'], 'string', 'max' => 1000,],
             [['text'], 'string', 'max' => 2000,],
-            [['image'], 'image', 'skipOnEmpty' => true, 'extensions' => 'jpg, gif', 'maxWidth' => 300, 'maxHeight' => 300],
+            [['image'],
+                'image',
+                'skipOnEmpty' => true,
+                'extensions' => 'jpg, gif',
+                'maxWidth' => Yii::$app->params['maxWidth'],
+                'maxHeight' => Yii::$app->params['maxHeight'],
+            ],
         ];
     }
-
-//    public function upload(): bool|string
-//    {
-//        if ($this->validate()) {
-//            $filePath = 'web/images' . $this->image->baseName . '.' . $this->image->extension;
-//            $this->image->saveAs($filePath);
-//            return $filePath;
-//        } else {
-//            return false;
-//        }
-//    }
 
 
     /**
@@ -53,8 +46,8 @@ class News extends ActiveRecord
         if ($this->validate()) {
             $this->image->saveAs("images/{$this->image->baseName}.{$this->image->extension}");
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 }

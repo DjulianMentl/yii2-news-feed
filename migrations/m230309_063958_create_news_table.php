@@ -27,7 +27,6 @@ class m230309_063958_create_news_table extends Migration
         ]);
 
         $this->actionGenerate();
-
     }
 
     /**

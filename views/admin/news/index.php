@@ -11,24 +11,24 @@ $this->title = Html::encode($title);
 $this->params['breadcrumbs'][] = $this->title;
 
 ?>
-<h1><?= $this->title ?></h1>
+<h1 class="my-2"><?= $this->title ?></h1>
 
-<div>
+<div class="my-2">
     <?php foreach($model as $news) {?>
-    <div>
 
-        <h3><?= Html::a(Html::encode($news->date) . ' — ' . Html::encode($news->title),
+    <div>
+        <h3 class="my-2"><?= Html::a(Html::encode($news->date) . ' — ' . Html::encode($news->title),
             Url::to(['admin/news/show', 'id' => $news->id])) ?></h3>
 
-        <div class="news-preview"><?= Html::encode($news->preview) ?></div>
+        <div class="my-2"><?= Html::encode($news->preview) ?></div>
     </div>
     <?php } ?>
 
     <div>
-        <?= Html::a("Добавить новость", Url::to(['admin/news/create'])) ?>
+        <?= Html::a("Добавить новость", Url::to(['admin/news/create']), ['class' => 'btn btn-success btn-sm my-2']) ?>
     </div>
 
-    <div class="pagination"><?= LinkPager::widget([
+    <div class="pagination my-2"><?= LinkPager::widget([
 
             'pagination' => $pagination,
             'maxButtonCount' => 5,

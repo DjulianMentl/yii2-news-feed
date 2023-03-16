@@ -4,12 +4,17 @@ namespace app\controllers\admin;
 
 use app\models\News;
 use app\services\NewsServiceInterface;
+use ExceptionMessages;
 use Yii;
 use yii\base\Exception;
+use yii\base\InvalidConfigException;
+use yii\di\NotInstantiableException;
+use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\web\Request;
+use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\UploadedFile;
+
 
 class NewsController extends Controller
 {
@@ -19,6 +24,28 @@ class NewsController extends Controller
     {
         parent::__construct($id, $module, $config);
         $this->news = $news;
+    }
+
+
+    public function behaviors(): array
+    {
+        return [
+            'access' => [
+                'class' => AccessControl::class,
+                'rules' => [
+                    [
+                        'allow' => true,
+                        'actions' => ['login'],
+                        'roles' => ['?'],
+                    ],
+                    [
+                        'allow' => true,
+                        'actions' => ['logout', 'index', 'show', 'create', 'store', 'edit', 'update', 'destroy'],
+                        'roles' => ['@'],
+                    ],
+                ],
+            ],
+        ];
     }
 
 
@@ -34,9 +61,13 @@ class NewsController extends Controller
     }
 
 
+    /**
+     * @throws NotInstantiableException
+     * @throws InvalidConfigException
+     */
     public function actionCreate(): string
     {
-        $model = new News();
+        $model = Yii::$container->get(News::class);
 
         return $this->render('create', compact('model'));
     }
@@ -45,9 +76,12 @@ class NewsController extends Controller
     /**
      * @throws Exception
      */
-    public function actionStore()
+    public function actionStore(): Response
     {
-        $this->news->store();
+        $model = Yii::$container->get(News::class);
+        $model = $this->loadPostData($model);
+
+        $this->news->store($model);
 
         return $this->redirect(['admin/news/index']);
     }
@@ -59,19 +93,45 @@ class NewsController extends Controller
     }
 
 
-    public function actionUpdate(Request $request, int $id)
+    /**
+     * @throws NotFoundHttpException
+     */
+    public function actionUpdate(int $id): string
     {
+        $model = $this->news->show($id);
+        $model = $this->loadPostData($model);
 
-        $this->news->update($id);
+        if (Yii::$app->request->post('removeImg')) {
+            $model->image = null;
+        }
+
+        $this->news->update($model);
 
         return $this->actionShow($id);
     }
 
 
-    public function actionDestroy(int $id)
+    public function actionDestroy(int $id): Response
     {
         $this->news->delete($id);
 
         return $this->redirect(['admin/news/index']);
+    }
+
+
+    /**
+     * @throws NotFoundHttpException
+     */
+    private function loadPostData(News $model): News
+    {
+        if ($model->load(Yii::$app->request->post())) {
+            if (empty($model->image)) {
+                $model->image = UploadedFile::getInstance($model, 'image');
+            }
+
+            return $model;
+        }
+
+        throw new NotFoundHttpException(ExceptionMessages::NEWS_SAVE_ERROR_MESSAGE);
     }
 }

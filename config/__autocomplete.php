@@ -21,9 +21,11 @@ class Yii {
 /**
  * @property yii\rbac\DbManager $authManager 
  * @property \yii\web\User|__WebUser $user
+ * @property mixed|object|null $queue
  * 
  */
 class __Application {
+
 }
 
 /**

@@ -3,14 +3,16 @@
 use app\components\listeners\EmailNotificationShowNewsListener;
 use app\services\NewsService;
 use app\services\NewsServiceInterface;
-use app\services\SendEmails;
-use app\services\SendEmailsInterface;
 use yii\mutex\PgsqlMutex;
+use yii\queue\db\Queue;
+use yii\queue\LogBehavior;
 use yii\symfonymailer\Mailer;
 
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 $routes = require __DIR__ . '/routes.php';
+$queue = require __DIR__ . '/queue.php';
+$mailer = require __DIR__ . '/mailer.php';
 
 $config = [
     'id' => 'basic',
@@ -35,14 +37,7 @@ $config = [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        'mailer' => [
-            'class' => Mailer::class,
-            'viewPath' => '@app/mail',
-            'useFileTransport' => false,
-            'transport' => [
-                'dsn' => 'smtp://e.ryndya@worksolutions.ru:82bP38qt@smtp.yandex.ru:465',
-            ],
-        ],
+        'mailer' => $mailer,
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
@@ -52,17 +47,7 @@ $config = [
                 ],
             ],
         ],
-        'queue' => [
-            'class' => 'yii\queue\db\Queue',
-            'db' => 'db',
-            'tableName' => '{{%queue}}',
-            'channel' => 'default',
-            'mutex' => [
-                'class' => PgsqlMutex::class,
-                'db' => 'db',
-            ],
-            'mutexTimeout' => 0,
-        ],
+        'queue' => $queue,
         'db' => $db,
         'urlManager' => [
             'class' => 'yii\web\UrlManager',
@@ -81,7 +66,6 @@ $config = [
     'container' => [
         'definitions' => [
             NewsServiceInterface::class => NewsService::class,
-            SendEmailsInterface::class => SendEmails::class,
         ],
     ],
     'timeZone' => 'Europe/Moscow',

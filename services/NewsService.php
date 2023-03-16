@@ -2,15 +2,17 @@
 
 namespace app\services;
 
-use App\DTO\NewsData;
 use app\models\News;
+
+use ExceptionMessages;
 use Throwable;
 use Yii;
 use yii\base\Exception;
 use yii\data\Pagination;
 use yii\db\StaleObjectException;
 use yii\web\NotFoundHttpException;
-use yii\web\UploadedFile;
+
+
 
 class NewsService implements NewsServiceInterface
 {
@@ -23,12 +25,12 @@ class NewsService implements NewsServiceInterface
         $query = News::find();
 
         if ($query === null) {
-            throw new NotFoundHttpException('Неудалось вывести список новостей');
+            throw new NotFoundHttpException(ExceptionMessages::NEWS_OUTPUT_ERROR_MESSAGE);
         }
 
         $pagination = new Pagination([
             'totalCount' => $query->count(),
-            'defaultPageSize' => 5
+            'defaultPageSize' => Yii::$app->params['pageSize'],
         ]);
 
         $news = $query->orderBy('date DESC')
@@ -41,7 +43,6 @@ class NewsService implements NewsServiceInterface
             'model' => $news,
             'pagination' => $pagination,
         ];
-
     }
 
 
@@ -58,13 +59,9 @@ class NewsService implements NewsServiceInterface
      * @throws Exception
      * @throws NotFoundHttpException
      */
-    public function store()
+    public function store(News $model): void
     {
-        $model = new News();
-
-        if (Yii::$app->request->isPost) {
-            $this->saveNews($model);
-        }
+        $this->saveNews($model);
     }
 
 
@@ -72,10 +69,8 @@ class NewsService implements NewsServiceInterface
      * @throws Exception
      * @throws NotFoundHttpException
      */
-    public function update(int $id)
+    public function update(News $model):void
     {
-        $model = News::findOne($id);
-
         $this->saveNews($model);
     }
 
@@ -96,19 +91,15 @@ class NewsService implements NewsServiceInterface
      */
     private function saveNews(News $model): void
     {
-        if ($model->load(Yii::$app->request->post())) {
-            $model->image = UploadedFile::getInstance($model, 'image');
-
-            if (isset($model->image)) {
-                $model->upload();
-            }
-
-            if ($model->save(false)) {
-                return;
-            }
+        if (isset($model->image) && !is_string($model->image)) {
+            $model->upload();
         }
 
-        throw new NotFoundHttpException('Не удалось сохранить новость');
+        if ($model->save(false)) {
+            return;
+        }
+
+        throw new NotFoundHttpException(ExceptionMessages::NEWS_SAVE_ERROR_MESSAGE);
     }
 
     /**
@@ -118,10 +109,10 @@ class NewsService implements NewsServiceInterface
     {
         $news = News::findOne($id);
 
-        if ($news === null) {
-            throw new NotFoundHttpException('Новость не найдена');
+        if ($news) {
+            return $news;
         }
 
-        return $news;
+        throw new NotFoundHttpException(ExceptionMessages::NEWS_SEARCH_ERROR_MESSAGE);
     }
 }
